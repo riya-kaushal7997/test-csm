@@ -74,14 +74,15 @@ jobs:
 
       - name: Verify branch changes
         run: |
-          if git diff --quiet main release-vv2.0.0; then
-            echo "No changes detected between release-vv2.0.0 and main. Aborting."
+          if git diff --quiet main release-v${{ github.event.inputs.version }}; then
+            echo "No changes detected between release-v2.1.2 and main. Aborting."
             exit 1
           else
             echo "Changes detected. Proceeding with PR creation."
           fi
 
       - name: Create Pull request
+        if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -94,6 +95,7 @@ jobs:
 
 
       - name: Wait for PR to be merged
+        if: env.changes_made == 'true'
         run: |
           echo "Waiting for the PR to be merged. Please merge the PR manually."
           while true; do
