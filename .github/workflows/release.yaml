@@ -21,33 +21,45 @@ jobs:
           fi
       - name: Checkout the code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
 
       - name: Fetch all tags
         run: git fetch --tags
 
       - name: Create new tag
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
           git tag v${{ github.event.inputs.version }}
           git push origin v${{ github.event.inputs.version }}
 
-      - name: Create release branch
-        run: |
-          git checkout -b release-v${{ github.event.inputs.version }}
-          git push origin release-v${{ github.event.inputs.version }}
-
       - name: Update Changelog
         run: |
+          git checkout -b release-v${{ github.event.inputs.version }}
           echo "## [${{ github.event.inputs.version }}] - $(date +'%Y-%m-%d')" >> CHANGELOG-${{ github.event.inputs.version }}.md
           echo "- Added new release." >> CHANGELOG-${{ github.event.inputs.version }}.md
           git add CHANGELOG-${{ github.event.inputs.version }}.md
           git commit -m "Update changelog for release v${{ github.event.inputs.version }}"
           git push origin release-v${{ github.event.inputs.version }}
+
+      - name: Check branch status
+        run: |
+          echo "Checking branch status..."
+          git status
+          git branch -a
+          git log -1
+          git diff main...release-v${{ github.event.inputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull request
         uses: peter-evans/create-pull-request@v4
@@ -59,15 +71,6 @@ jobs:
           body: "This PR merges the release-v${{ github.event.inputs.version }} into main."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Check branch status
-      #   run: |
-      #     echo "Checking branch status..."
-      #     git status
-      #     git branch -a
-      #     git log -1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Wait for PR to be merged
