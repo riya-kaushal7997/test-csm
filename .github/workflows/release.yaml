@@ -36,25 +36,38 @@ jobs:
           git tag v${{ github.event.inputs.version }}
           git push origin v${{ github.event.inputs.version }}
 
+      - name: Create release branch
+        run: |
+          git checkout -b release-v${{ github.event.inputs.version }}
+          git push origin release-v${{ github.event.inputs.version }}
+
+      - name: Update Changelog
+        run: |
+          echo "## [${{ github.event.inputs.version }}] - $(date +'%Y-%m-%d')" >> CHANGELOG-${{ github.event.inputs.version }}.md
+          echo "- Added new release." >> CHANGELOG-${{ github.event.inputs.version }}.md
+          git add CHANGELOG-${{ github.event.inputs.version }}.md
+          git commit -m "Update changelog for release v${{ github.event.inputs.version }}"
+          git push origin release-v${{ github.event.inputs.version }}
+
       - name: Create Pull request
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-common-dependency
-          # base: test-release2
-          title: "Update common dependency to ${{ env.common_new_version }}"
-          body: "This PR updates the common dependency to ${{ env.common_new_version }}."
+          branch: release-v${{ github.event.inputs.version }}
+          base: main
+          title: "Release v${{ github.event.inputs.version }}"
+          body: "This PR merges the release-v${{ github.event.inputs.version }} into main."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check branch status
-        run: |
-          echo "Checking branch status..."
-          git status
-          git branch -a
-          git log -1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Check branch status
+      #   run: |
+      #     echo "Checking branch status..."
+      #     git status
+      #     git branch -a
+      #     git log -1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Wait for PR to be merged
