@@ -82,7 +82,6 @@ jobs:
           fi
 
       - name: Create Pull request
-        if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -95,7 +94,6 @@ jobs:
 
 
       - name: Wait for PR to be merged
-        if: env.changes_made == 'true'
         run: |
           echo "Waiting for the PR to be merged. Please merge the PR manually."
           while true; do
