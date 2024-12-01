@@ -107,6 +107,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Switch back to base branch
+        if: env.changes_made == 'true'
+        run: |
+          echo "Switching back to base branch main"
+          git checkout main
+          echo "Current branch after switching back: $(git branch --show-current)"
+
       - name: Create Pull request
         if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v7
@@ -121,6 +128,7 @@ jobs:
 
 
       - name: Wait for PR to be merged
+        if: env.changes_made == 'true'
         run: |
           echo "Waiting for the PR to be merged. Please merge the PR manually."
           while true; do
