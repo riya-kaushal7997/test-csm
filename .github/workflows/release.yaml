@@ -13,12 +13,20 @@ jobs:
     name: Build and Release
     runs-on: ubuntu-latest
     steps:
+      - name: Set Release version and branch name
+        run: |
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "branch_name=release-v${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
       - name: Validate version input
         run: |
-          if [[ "${{ github.event.inputs.version }}" == "none" ]]; then
-            echo "Invalid version specified: ${{ github.event.inputs.version }} Must follow major, minor, patch versioning."
+          if [[ "$version" == "none" ]]; then
+            echo "Invalid version specified: $version Must follow major, minor, patch versioning."
             exit 1
           fi
+        env:
+          version: ${{ env.version }}
+
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
@@ -34,54 +42,73 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
 
-      - name: Fetch all tags
-        run: git fetch --tags
-
-      - name: Create new tag
-        run: |
-          git tag v${{ github.event.inputs.version }}
-          git push origin v${{ github.event.inputs.version }}
+#      - name: Fetch all tags
+#        run: git fetch --tags
+#
+#      - name: Create new tag
+#        run: |
+#          git tag v${{ github.event.inputs.version }}
+#          git push origin v${{ github.event.inputs.version }}
 
       - name: Create Release Branch
         run: |
-          git checkout -b release-v${{ github.event.inputs.version }}
-          git push --set-upstream origin release-v${{ github.event.inputs.version }}
+          git checkout -b $branch_name
+          git push --set-upstream origin $branch_name
+        env:
+          branch_name: ${{ env.branch_name }}
 
-      - name: Switch to Release Branch
-        run: |
-          git checkout release-v${{ github.event.inputs.version }}
-          echo "Currently on branch: $(git branch --show-current)"
+#      - name: Switch to Release Branch
+#        run: |
+#          git checkout $branch_name
+#          echo "Currently on branch: $(git branch --show-current)"
 
       - name: Update and commit Changelog
         run: |
-          echo "## [v${{ github.event.inputs.version }}] - $(date +'%Y-%m-%d')" >> CHANGELOG-${{ github.event.inputs.version }}.md
-          echo "- Added new release." >> CHANGELOG-${{ github.event.inputs.version }}.md
-          cat CHANGELOG-${{ github.event.inputs.version }}.md
-          ls -l CHANGELOG-${{ github.event.inputs.version }}.md
-          git add CHANGELOG-${{ github.event.inputs.version }}.md
-          git commit -m "Update changelog for release v${{ github.event.inputs.version }}"
-          git push origin release-v${{ github.event.inputs.version }}
+          echo "Updating and committing CHANGELOG-$version"
+          echo "## [v$version] - $(date +'%Y-%m-%d')" >> CHANGELOG-$version.md
 
-      - name: Check branch status
-        run: |
-          echo "Checking branch status..."
-          git status
-          git branch -a
-          git log -1
-          git diff main...release-v${{ github.event.inputs.version }}
+          echo "- Added new release." >> CHANGELOG-$version.md
+          echo "- Updated CSM documentation." >> CHANGELOG-$version.md
+          echo "- Fixed bug for XYZ driver." >> CHANGELOG-$version.md
+
+          cat CHANGELOG-$version.md
+          ls -l CHANGELOG-$version.md
+
+          echo "Staging and commiting the CHANGELOG-$version.md"
+          git add CHANGELOG-$version.md
+          git commit -m "Update changelog for release v$version"
+          git push origin $branch_name
         env:
+          version: ${{ env.version }}
+          branch_name: ${{ env.branch_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#      - name: Check branch status
+#        run: |
+#          echo "Checking branch status..."
+#          git status
+#          git branch -a
+#          git log -1
+#          git diff main...release-v${{ github.event.inputs.version }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify branch changes
         run: |
+          changes_made=false
           if git diff --quiet main release-v${{ github.event.inputs.version }}; then
             echo "No changes detected between release-v2.1.2 and main. Aborting."
+            echo "changes_made=false" >> $GITHUB_ENV
             exit 1
           else
-            echo "Changes detected. Proceeding with PR creation."
+            echo "Changes detected. Proceeding for PR creation"
+            echo "changes_made=true" >> $GITHUB_ENV
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull request
+        if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
