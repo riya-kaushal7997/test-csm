@@ -91,6 +91,7 @@ jobs:
         run: |
           git fetch origin $branch_name 
           git checkout -b $branch_name origin/$branch_name 
+          git pull origin $branch_name
         env:
           branch_name: ${{ env.branch_name }}
 
