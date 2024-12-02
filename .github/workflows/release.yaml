@@ -103,6 +103,8 @@ jobs:
           else
             echo "The branch release-v${{ github.event.inputs.version }} does not exist."
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify branch changes
         run: |
