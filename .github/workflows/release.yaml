@@ -94,11 +94,19 @@ jobs:
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: actions/create-github-app-token@v1.11.0
+        id: generate-token
+        with:
+          app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
+
       - name: Verify if release branch exists
         run: |
           echo "Checking if release branch 'release-v${{ github.event.inputs.version }}' exists..."
           git fetch --all
-          if git show-ref --verify --quiet "refs/heads/release-v${{ github.event.inputs.version }}"; then
+          echo "Listing all remote branches..."
+          git branch -r
+          if git show-ref --verify --quiet "release-v${{ github.event.inputs.version }}"; then
             echo "The branch release-v${{ github.event.inputs.version }} exists."
           else
             echo "The branch release-v${{ github.event.inputs.version }} does not exist."
@@ -131,7 +139,7 @@ jobs:
         if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           branch: release-v${{ github.event.inputs.version }}
           base: main
           commit-message: "Adding CHANGELOG file for new release ${{ env.version }}"
