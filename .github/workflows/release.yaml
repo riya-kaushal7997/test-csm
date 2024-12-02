@@ -94,6 +94,16 @@ jobs:
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify if release branch exists
+        run: |
+          echo "Checking if release branch 'release-v${{ github.event.inputs.version }}' exists..."
+          git fetch origin
+          if git show-ref --verify --quiet "refs/heads/release-v${{ github.event.inputs.version }}"; then
+            echo "The branch release-v${{ github.event.inputs.version }} exists."
+          else
+            echo "The branch release-v${{ github.event.inputs.version }} does not exist."
+          fi
+
       - name: Verify branch changes
         run: |
           changes_made=true
