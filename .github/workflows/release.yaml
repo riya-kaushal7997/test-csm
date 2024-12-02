@@ -87,14 +87,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch and checkout release branch
-        run: |
-          git fetch origin $branch_name 
-          git checkout -b $branch_name origin/$branch_name 
-          git pull origin $branch_name
-        env:
-          branch_name: ${{ env.branch_name }}
-
       - name: Create Pull request
         if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v7
