@@ -84,9 +84,15 @@ jobs:
 
           echo "Commit log of release-v${{ github.event.inputs.version }} compared to main:"
           git log origin/main..origin/release-v${{ github.event.inputs.version }} --oneline
-          git checkout origin/release-v${{ github.event.inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch and checkout release branch
+        run: |
+          git fetch origin $branch_name 
+          git checkout -b $branch_name origin/$branch_name 
+        env:
+          branch_name: ${{ env.branch_name }}
 
       - name: Create Pull request
         if: env.changes_made == 'true'
