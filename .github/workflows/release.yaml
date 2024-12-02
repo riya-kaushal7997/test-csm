@@ -84,6 +84,7 @@ jobs:
 
           echo "Commit log of release-v${{ github.event.inputs.version }} compared to main:"
           git log origin/main..origin/release-v${{ github.event.inputs.version }} --oneline
+          git checkout origin/release-v${{ github.event.inputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -92,7 +93,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: origin/release-v${{ github.event.inputs.version }}
+          branch: release-v${{ github.event.inputs.version }}
           base: main
           commit-message: "Adding CHANGELOG file for new release ${{ env.version }}"
           title: "Release v${{ github.event.inputs.version }}"
