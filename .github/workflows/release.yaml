@@ -62,27 +62,27 @@ jobs:
 #          git checkout $branch_name
 #          echo "Currently on branch: $(git branch --show-current)"
 
-      - name: Update and commit Changelog
-        run: |
-          echo "Updating and committing CHANGELOG-$version"
-          echo "## [v$version] - $(date +'%Y-%m-%d')" >> CHANGELOG-$version.md
-
-          echo "- Added new release." >> CHANGELOG-$version.md
-          echo "- Updated CSM documentation." >> CHANGELOG-$version.md
-          echo "- Fixed bug for XYZ driver." >> CHANGELOG-$version.md
-
-          cat CHANGELOG-$version.md
-          ls -l CHANGELOG-$version.md
-
-          echo "Staging and commiting the CHANGELOG-$version.md"
-          git add CHANGELOG-$version.md
-          git commit -m "Update changelog for release v$version"
-          echo "changes_made=true" >> $GITHUB_ENV
-#          git push origin $branch_name
-        env:
-          version: ${{ env.version }}
-          branch_name: ${{ env.branch_name }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Update and commit Changelog
+#        run: |
+#          echo "Updating and committing CHANGELOG-$version"
+#          echo "## [v$version] - $(date +'%Y-%m-%d')" >> CHANGELOG-$version.md
+#
+#          echo "- Added new release." >> CHANGELOG-$version.md
+#          echo "- Updated CSM documentation." >> CHANGELOG-$version.md
+#          echo "- Fixed bug for XYZ driver." >> CHANGELOG-$version.md
+#
+#          cat CHANGELOG-$version.md
+#          ls -l CHANGELOG-$version.md
+#
+#          echo "Staging and commiting the CHANGELOG-$version.md"
+#          git add CHANGELOG-$version.md
+#          git commit -m "Update changelog for release v$version"
+#          echo "changes_made=true" >> $GITHUB_ENV
+##          git push origin $branch_name
+#        env:
+#          version: ${{ env.version }}
+#          branch_name: ${{ env.branch_name }}
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Check branch status
 #        run: |
