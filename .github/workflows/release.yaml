@@ -62,7 +62,7 @@ jobs:
           git fetch --all
           echo "Listing all remote branches..."
           git branch -r
-          if git show-ref --verify --quiet "origin/release-v${{ github.event.inputs.version }}"; then
+          if git branch -r | grep "origin/release-v${{ github.event.inputs.version }}"; then
             echo "The branch release-v${{ github.event.inputs.version }} exists."
           else
             echo "The branch release-v${{ github.event.inputs.version }} does not exist."
@@ -73,7 +73,7 @@ jobs:
       - name: Verify branch changes
         run: |
           changes_made=false
-          if git diff --quiet main origin/release-v${{ github.event.inputs.version }}; then
+          if git diff --quiet origin/main origin/release-v${{ github.event.inputs.version }}; then
             echo "No changes detected between release-v${{ github.event.inputs.version }} and main. Aborting.."
             echo "changes_made=false" >> $GITHUB_ENV
             exit 1
@@ -81,6 +81,9 @@ jobs:
             echo "Changes detected. Proceeding for PR creation"
             echo "changes_made=true" >> $GITHUB_ENV
           fi
+
+          echo "Commit log of release-v${{ github.event.inputs.version }} compared to main:"
+          git log origin/main..origin/release-v${{ github.event.inputs.version }} --oneline
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
