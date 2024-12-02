@@ -121,7 +121,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: release-v${{ github.event.inputs.version }}
-          base: test-release-main
+          base: main
           commit-message: "Adding CHANGELOG file for new release ${{ env.version }}"
           title: "Release v${{ github.event.inputs.version }}"
           body: "This PR merges the release-v${{ github.event.inputs.version }} into main."
