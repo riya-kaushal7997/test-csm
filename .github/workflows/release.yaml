@@ -94,19 +94,19 @@ jobs:
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Verify branch changes
-#        run: |
-#          changes_made=true
-#          if git diff --quiet main release-v${{ github.event.inputs.version }}; then
-#            echo "No changes detected between release-v2.1.2 and main. Aborting.."
-#            echo "changes_made=false" >> $GITHUB_ENV
-#            exit 1
-#          else
-#            echo "Changes detected. Proceeding for PR creation"
-#            echo "changes_made=true" >> $GITHUB_ENV
-#          fi
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify branch changes
+        run: |
+          changes_made=true
+          if git diff --quiet main release-v${{ github.event.inputs.version }}; then
+            echo "No changes detected between release-v2.1.2 and main. Aborting.."
+            echo "changes_made=false" >> $GITHUB_ENV
+            exit 1
+          else
+            echo "Changes detected. Proceeding for PR creation"
+            echo "changes_made=true" >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Switch back to base branch
 #        if: env.changes_made == 'true'
