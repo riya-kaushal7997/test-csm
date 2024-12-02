@@ -120,7 +120,6 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release-v${{ github.event.inputs.version }}
           base: main
           commit-message: "Adding CHANGELOG file for new release ${{ env.version }}"
           title: "Release v${{ github.event.inputs.version }}"
