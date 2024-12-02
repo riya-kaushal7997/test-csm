@@ -50,55 +50,11 @@ jobs:
 #          git tag v${{ github.event.inputs.version }}
 #          git push origin v${{ github.event.inputs.version }}
 
-#      - name: Create Release Branch
-#        run: |
-#          git checkout -b $branch_name
-#          git push --set-upstream origin $branch_name
-#        env:
-#          branch_name: ${{ env.branch_name }}
-
-#      - name: Switch to Release Branch
-#        run: |
-#          git checkout $branch_name
-#          echo "Currently on branch: $(git branch --show-current)"
-
-#      - name: Update and commit Changelog
-#        run: |
-#          echo "Updating and committing CHANGELOG-$version"
-#          echo "## [v$version] - $(date +'%Y-%m-%d')" >> CHANGELOG-$version.md
-#
-#          echo "- Added new release." >> CHANGELOG-$version.md
-#          echo "- Updated CSM documentation." >> CHANGELOG-$version.md
-#          echo "- Fixed bug for XYZ driver." >> CHANGELOG-$version.md
-#
-#          cat CHANGELOG-$version.md
-#          ls -l CHANGELOG-$version.md
-#
-#          echo "Staging and commiting the CHANGELOG-$version.md"
-#          git add CHANGELOG-$version.md
-#          git commit -m "Update changelog for release v$version"
-#          echo "changes_made=true" >> $GITHUB_ENV
-##          git push origin $branch_name
-#        env:
-#          version: ${{ env.version }}
-#          branch_name: ${{ env.branch_name }}
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: Check branch status
-#        run: |
-#          echo "Checking branch status..."
-#          git status
-#          git branch -a
-#          git log -1
-#          git diff main...release-v${{ github.event.inputs.version }}
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/create-github-app-token@v1.11.0
-        id: generate-token
-        with:
-          app-id: ${{ vars.CSM_RELEASE_APP_ID }}
-          private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
+      # - uses: actions/create-github-app-token@v1.11.0
+      #   id: generate-token
+      #   with:
+      #     app-id: ${{ vars.CSM_RELEASE_APP_ID }}
+      #     private-key: ${{ secrets.CSM_RELEASE_APP_PRIVATE_KEY }}
 
       - name: Verify if release branch exists
         run: |
@@ -128,18 +84,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Switch back to base branch
-#        if: env.changes_made == 'true'
-#        run: |
-#          echo "Switching back to base branch main"
-#          git checkout main
-#          echo "Current branch after switching back: $(git branch --show-current)"
-
       - name: Create Pull request
         if: env.changes_made == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ steps.generate-token.outputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: release-v${{ github.event.inputs.version }}
           base: main
           commit-message: "Adding CHANGELOG file for new release ${{ env.version }}"
