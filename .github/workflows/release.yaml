@@ -97,7 +97,7 @@ jobs:
       - name: Verify if release branch exists
         run: |
           echo "Checking if release branch 'release-v${{ github.event.inputs.version }}' exists..."
-          git fetch origin
+          git fetch --all
           if git show-ref --verify --quiet "refs/heads/release-v${{ github.event.inputs.version }}"; then
             echo "The branch release-v${{ github.event.inputs.version }} exists."
           else
