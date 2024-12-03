@@ -30,6 +30,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
+          ref: ${{ env.branch_name }}
           fetch-depth: 0
 
 #      - name: Set up Go
@@ -58,14 +59,14 @@ jobs:
 
       - name: Verify if release branch exists
         run: |
-          echo "Checking if release branch 'release-v${{ github.event.inputs.version }}' exists..."
+          echo "Checking if release branch '${{ env.branch_name }}' exists..."
           git fetch --all
           echo "Listing all remote branches..."
           git branch -r
-          if git branch -r | grep "origin/release-v${{ github.event.inputs.version }}"; then
-            echo "The branch release-v${{ github.event.inputs.version }} exists."
+          if git branch -r | grep "origin/${{ env.branch_name }}"; then
+            echo "The branch ${{ env.branch_name }} exists."
           else
-            echo "The branch release-v${{ github.event.inputs.version }} does not exist."
+            echo "The branch ${{ env.branch_name }} does not exist."
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,8 +74,8 @@ jobs:
       - name: Verify branch changes
         run: |
           changes_made=false
-          if git diff --quiet origin/main origin/release-v${{ github.event.inputs.version }}; then
-            echo "No changes detected between release-v${{ github.event.inputs.version }} and main. Aborting.."
+          if git diff --quiet origin/main origin/${{ env.branch_name }}; then
+            echo "No changes detected between ${{ env.branch_name }} and main. Aborting.."
             echo "changes_made=false" >> $GITHUB_ENV
             exit 1
           else
@@ -82,23 +83,27 @@ jobs:
             echo "changes_made=true" >> $GITHUB_ENV
           fi
 
-          echo "Commit log of release-v${{ github.event.inputs.version }} compared to main:"
-          git log origin/main..origin/release-v${{ github.event.inputs.version }} --oneline
+          echo "Commit log of ${{ env.branch_name }} compared to main:"
+          git log origin/main..origin/${{ env.branch_name }} --oneline
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Pull request
-        if: env.changes_made == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release-v${{ github.event.inputs.version }}
-          base: main
-          commit-message: "Adding CHANGELOG file for new release ${{ env.version }}"
-          title: "Release v${{ github.event.inputs.version }}"
-          body: "This PR merges the release-v${{ github.event.inputs.version }} into main."
-          sign-commits: true
-          delete-branch: false
+      # Fetch the remote branch and create a local version
+#      - name: Fetch and checkout release branch
+#        run: |
+#          git fetch origin $branch_name
+#          git checkout -b $branch_name origin/$branch_name || git checkout $branch_name
+#          git pull origin $branch_name  # Ensure local branch is up to date
+#        env:
+#          branch_name: ${{ env.branch_name }}
+
+      # Create a Pull Request using GitHub CLI
+      - name: Create Pull Request using GitHub CLI
+        run: |
+          gh pr create --title "Release v${{ env.version }}" \
+                       --body "This PR merges the release-v${{ env.version }} into main." \
+                       --base main \
+                       --head ${{ env.branch_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
