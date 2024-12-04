@@ -78,7 +78,6 @@ jobs:
       - name: Create Pull Request using GitHub CLI
         run: |
           gh pr create --title "Release v${{ env.version }}" \
-                       --body "Release v${{ env.version }}" \
                        --template "pull_request_template.md" \
                        --base main \
                        --head ${{ env.branch_name }}
