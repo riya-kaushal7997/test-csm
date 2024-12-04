@@ -74,13 +74,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Update Pull Request Template
+        run: |
+          echo "### Release Notes" > pull_request_template.md
+          echo "Description: Release v${{ env.version }}" >> pull_request_template.md
+          echo "" >> pull_request_template.md
+
       # Create a Pull Request using GitHub CLI
       - name: Create Pull Request using GitHub CLI
         run: |
           gh pr create --title "Release v${{ env.version }}" \
-                       --template "pull_request_template.md" \
-                       --base main \
-                       --head ${{ env.branch_name }}
+                   --body-file "pull_request_template.md" \
+                   --base main \
+                   --head ${{ env.branch_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
