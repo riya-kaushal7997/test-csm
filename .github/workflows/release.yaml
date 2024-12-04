@@ -77,7 +77,7 @@ jobs:
       # Create a Pull Request using GitHub CLI
       - name: Create Pull Request using GitHub CLI
         run: |
-          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh pr create --title "Release v${{ env.version }}" \
                        --body "Release v${{ env.version }}" \
                        --template "pull_request_template.md" \
