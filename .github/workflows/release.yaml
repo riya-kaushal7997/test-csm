@@ -77,7 +77,8 @@ jobs:
       # Create a Pull Request using GitHub CLI
       - name: Create Pull Request using GitHub CLI
         run: |
-          sed 's/A few sentences describing the overall goals of the pull request'"'"'s commits./Release v1.2.3/' pull_request_template.md > temp_release_pr_body.md
+          pwd
+          sed 's/A few sentences describing the overall goals of the pull request'"'"'s commits./Release v1.2.3/' .github/pull_request_template.md > temp_release_pr_body.md
           cat temp_release_pr_body.md
           gh pr create --title "Release v${{ env.version }}" \
                        --body-file "temp_release_pr_body.md" \
