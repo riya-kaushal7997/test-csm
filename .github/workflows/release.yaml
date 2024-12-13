@@ -83,10 +83,15 @@ jobs:
       # Create a Pull Request using GitHub CLI
       - name: Create Pull Request using GitHub CLI
         run: |
+          echo "# Description" > temp_release_pr_body.md
+          echo "Release v1.12.0" >> temp_release_pr_body.md
+          echo "" >> temp_release_pr_body.md
+          tail -n +2 pull_request_template.md >> temp_release_pr_body.md
           gh pr create --title "Release v${{ env.version }}" \
-                   --body-file "pull_request_template.md" \
-                   --base main \
-                   --head ${{ env.branch_name }}
+                       --body "Release v${{ env.version }}" \
+                       --template "temp_release_pr_body.md" \
+                       --base main \
+                       --head ${{ env.branch_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
