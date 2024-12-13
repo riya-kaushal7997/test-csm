@@ -129,7 +129,7 @@ jobs:
           release_name: v${{ env.version }}
           body: |
             ### Documentation
-            - [General Documentation]https://dell.github.io/csm-docs/docs/
+            - [General Documentation](https://dell.github.io/csm-docs/docs/)
             ### Change Log
             See the [CHANGELOG](https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md) for more details.
           draft: true
