@@ -78,11 +78,12 @@ jobs:
       - name: Create Pull Request using GitHub CLI
         run: |
           sed 's/A few sentences describing the overall goals of the pull request'"'"'s commits./Release v${{ env.version }}/' .github/pull_request_template.md > temp_release_pr_body.md
-          cat temp_release_pr_body.md
           gh pr create --title "Release v${{ env.version }}" \
                        --body-file "temp_release_pr_body.md" \
                        --base main \
                        --head ${{ env.branch_name }}
+          echo "Waiting for 30 seconds to ensure PR is registered..."
+          sleep 30
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
