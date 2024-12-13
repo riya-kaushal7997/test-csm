@@ -120,15 +120,19 @@ jobs:
           git tag v${{ env.version }}
           git push origin v${{ env.version }}
 
-      - name: Create Release
-        id: release_notes
-        uses: softprops/action-gh-release@v2
+      - name: Create Github Release
+        id: create_release
+        uses: actions/create-release@v1
         with:
           tag_name: v${{ env.version }}
-          name: Release v${{ env.version }}
+          name: v${{ env.version }}
+          body: |
+            ### Documentation
+            - https://dell.github.io/csm-docs/docs/
+            ### Change Log
+            See the https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md for more details.
           draft: true
           prerelease: false
-          generate_release_notes: true
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
