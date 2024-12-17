@@ -8,15 +8,20 @@ on:  # yamllint disable-line rule:truthy
       version:
         description: 'Version to release (major, minor, patch) Ex: 1.0.0'
         required: true
+
+env:
+  version: ${{ github.event.inputs.version }}
+  branch_name: release-v${{ github.event.inputs.version }}
+
 jobs:
   validate-and-prepare:
     name: Validate Input and Prepare Release
     runs-on: ubuntu-latest
     steps:
-      - name: Set Release version and branch name
+      - name: Print version and branch name
         run: |
-          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          echo "branch_name=release-v${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "Version: ${{ env.version }}"
+          echo "Branch name: ${{ env.branch_name }}"
 
       - name: Validate version input
         run: |
