@@ -68,7 +68,7 @@ jobs:
       - name: Check working directory
         run: |
           pwd
-          ls -R .github/
+          ls
 
       - name: Create Pull Request
         run: |
