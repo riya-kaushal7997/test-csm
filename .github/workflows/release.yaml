@@ -65,6 +65,11 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
 
+      - name: Check working directory
+        run: |
+          pwd
+          ls -R .github/
+
       - name: Create Pull Request
         run: |
           sed 's/A few sentences describing the overall goals of the pull request'"'"'s commits./Release v${{ env.version }}/' .github/pull_request_template.md > temp_release_pr_body.md
