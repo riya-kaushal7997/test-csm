@@ -7,6 +7,7 @@
     - [Features](#features)
     - [Bugs](#bugs)
     - changing something
+    - change 2
 
 - [v1.13.2](#v1130)
   - [Changelog since v1.13.1](#changelog-since-v1120)
