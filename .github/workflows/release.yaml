@@ -115,6 +115,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # TODO: attach built binaries to the release (if any like repctl, dellctl etc.)
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
@@ -130,7 +131,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine previous version
+      - name: Determine previous major/ minor version
         id: get_previous_version
         run: |
           # Extract the previous version from tags
@@ -145,19 +146,17 @@ jobs:
           git tag v${{ env.version }}
           git push origin v${{ env.version }}
 
-      - name: Set Changelog URL
+      - name: Set CHANGELOG URL
         id: set_changelog_url
         run: |
           if [[ "${{ env.version }}" =~ \.0$ ]]; then
             # Major or minor release: Link to the new changelog file for the version
             echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
             echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md" >> $GITHUB_ENV
-            echo "::set-output name=changelog_url::https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
           else
             # Patch release: Link to the previous version's changelog
             echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
             echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md" >> $GITHUB_ENV
-            echo "::set-output name=changelog_url::https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
           fi
 
       - name: Create Release
@@ -174,6 +173,6 @@ jobs:
             ## Documentation
             - [General Documentation](https://dell.github.io/csm-docs/docs/)
             ## Change Log
-             See the [CHANGELOG](${{ steps.set_changelog_url.outputs.changelog_url }}) for more details.
+             See the [CHANGELOG](${{ env.changelog_url }}) for more details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
