@@ -6,6 +6,7 @@
     - [Deprecation](#deprecation)
     - [Features](#features)
     - [Bugs](#bugs)
+    - changing something
 
 - [v1.13.2](#v1130)
   - [Changelog since v1.13.1](#changelog-since-v1120)
