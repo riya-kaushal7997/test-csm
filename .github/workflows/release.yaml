@@ -130,19 +130,32 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Determine previous version
+        id: get_previous_version
+        run: |
+          # Extract the previous version from tags
+          PREVIOUS_VERSION=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed 's/v//' | head -n 1)
+          echo "Previous version: $PREVIOUS_VERSION"
+          echo "previous_version=$PREVIOUS_VERSION" >> $GITHUB_ENV
+
       - name: Create new tag
         run: |
           git fetch --tags
           git tag v${{ env.version }}
           git push origin v${{ env.version }}
 
-      - name: Determine previous version
-        id: get_previous_version
+      - name: Set Changelog URL
+        id: set_changelog_url
         run: |
-          # Extract the previous version from tags (you may need to adjust this to your tag structure)
-          PREVIOUS_VERSION=$(git tag --sort=-v:refname | grep -m 1 '^v[0-9]' | sed 's/v//')
-          echo "Previous version: $PREVIOUS_VERSION"
-          echo "previous_version=$PREVIOUS_VERSION" >> $GITHUB_ENV
+          if [[ "${{ env.version }}" =~ \.0$ ]]; then
+            # Major or minor release: Link to the new changelog file for the version
+            echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
+            echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md" >> $GITHUB_ENV
+          else
+            # Patch release: Link to the previous version's changelog
+            echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
+            echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md" >> $GITHUB_ENV
+          fi
 
       - name: Create Release
         id: create_release
@@ -161,16 +174,3 @@ jobs:
              ${{ steps.set_changelog_url.outputs.changelog_url }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set Changelog URL
-        id: set_changelog_url
-        run: |
-          if [[ "${{ env.version }}" =~ \.0$ ]]; then
-            # Major or minor release: Link to the new changelog file for the version
-            echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
-            echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md" >> $GITHUB_ENV
-          else
-            # Patch release: Link to the previous version's changelog
-            echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
-            echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md" >> $GITHUB_ENV
-          fi
