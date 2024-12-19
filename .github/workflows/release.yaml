@@ -83,8 +83,8 @@ jobs:
                        --body-file "temp_release_pr_body.md" \
                        --base main \
                        --head ${{ env.branch_name }}
-          echo "Waiting for 30 seconds to ensure PR is registered..."
-          sleep 30
+          echo "Waiting for 10 seconds to ensure PR is registered..."
+          sleep 10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
