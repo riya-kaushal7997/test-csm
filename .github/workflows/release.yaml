@@ -151,12 +151,12 @@ jobs:
         run: |
           if [[ "${{ env.version }}" =~ \.0$ ]]; then
             # Major or minor release: Link to the new changelog file for the version
-            echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
-            echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md" >> $GITHUB_ENV
+            echo "Changelog URL: https://github.com/riya-kaushal7997/test-csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
+            echo "changelog_url=https://github.com/riya-kaushal7997/test-csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md" >> $GITHUB_ENV
           else
             # Patch release: Link to the previous version's changelog
-            echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
-            echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md" >> $GITHUB_ENV
+            echo "Changelog URL: https://github.com/riya-kaushal7997/test-csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
+            echo "changelog_url=https://github.com/riya-kaushal7997/test-csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md" >> $GITHUB_ENV
           fi
 
       - name: Create Release
