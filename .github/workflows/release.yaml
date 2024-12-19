@@ -151,10 +151,12 @@ jobs:
             # Major or minor release: Link to the new changelog file for the version
             echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
             echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md" >> $GITHUB_ENV
+            echo "::set-output name=changelog_url::https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.version }}.md"
           else
             # Patch release: Link to the previous version's changelog
             echo "Changelog URL: https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
             echo "changelog_url=https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md" >> $GITHUB_ENV
+            echo "::set-output name=changelog_url::https://github.com/dell/csm/blob/main/CHANGELOG/CHANGELOG-${{ env.previous_version }}.md"
           fi
 
       - name: Create Release
@@ -171,6 +173,6 @@ jobs:
             ## Documentation
             - [General Documentation](https://dell.github.io/csm-docs/docs/)
             ## Change Log
-             ${{ steps.set_changelog_url.outputs.changelog_url }}
+             See the [CHANGELOG](${{ steps.set_changelog_url.outputs.changelog_url }}) for more details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
