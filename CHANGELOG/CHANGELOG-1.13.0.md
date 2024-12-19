@@ -1,4 +1,12 @@
 <!--toc-->
+- [v1.13.3](#v1130)
+  - [Changelog since v1.13.2](#changelog-since-v1120)
+  - [Known Issues](#known-issues)
+  - [Changes by Kind](#changes-by-kind)
+    - [Deprecation](#deprecation)
+    - [Features](#features)
+    - [Bugs](#bugs)
+
 - [v1.13.2](#v1130)
   - [Changelog since v1.13.1](#changelog-since-v1120)
   - [Known Issues](#known-issues)
